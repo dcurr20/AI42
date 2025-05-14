@@ -1,0 +1,43 @@
+Following are additional sounds for the game. They are played when audio is enabled. Some are required frequently, like "SHUFFLE" or domino "clicks", and some are randomly played to imitate real human players comments during casual play. DO NOT USE random comments for tournament play.
+
+3DEEP = Three deep, set in concrete - A random comment when playing the third trump in your hand.
+
+BIDTOWIN = Ya gotta bid to win" - A random comment by any player directed to any other player who passes the bid frequently.
+
+BIGEND = "The big end" - Comment when leading a non-double on the first trick. The high pips end of the domino played is the trump being called.
+
+CLICK1 = "click" - first of 6 different alternate sounds for dominoes being played or drawn by each player.
+
+CLICK2 = "click" - second of 6 different alternate sounds for dominoes being played or drawn by each player.
+
+CLICK3 = "click" - third of 6 different alternate sounds for dominoes being played or drawn by each player.
+
+CLICK4 = "click" - fourth of 6 different alternate sounds for dominoes being played or drawn by each player.
+
+CLICK5 = "click" - fifth of 6 different alternate sounds for dominoes being played or drawn by each player.
+
+CLICK6 = "click" - sixth of 6 different alternate sounds for dominoes being played or drawn by each player.
+
+CONNECT = "electronic zoom" - A random sound after winning a tough hand DO NOT USE
+
+FEELLUCK = "I feel lucky" - A random comment when bidding 30
+
+LITTLEND = "The little end" - Comment when leading a non-double on the first trick. The smaller pips end of the domino is the trump being called.
+
+NEXT = "Who's next" - A random comment at the end of a game indicating the winner is looking for the next opponents to beat.
+
+NICKEL = "Oh ya got my nickel" - A random comment when an opponent has to follow suit and is forced to play a 5 count domino.
+
+request = "electronic sweep" - unknown reason for this sound. DO NOT USE
+
+SHUFFLE = "shuffling dominoes" - the sound of dominoes being shuffled prior to the draw. This sound is used every time the dominoes are shuffled.
+
+SIXFOUR = "Gimme that six four" - A random comment by the leader expecting that he has forced an opponent to play the 6-4 domino and thus winning a 10 count domino.
+
+STUDY = "Study long, play wrong" - A random comment by any player at any time directed at any other player that is delaying a bid or selecting a domino to play for an extended period of time (ie >20 seconds). 
+
+THANKYA = Thank ya partner" - A random comment usually made by the leader when a partner plays count on a trick or when a partner plays a high domino to "catch" the trick and get in the lead.
+
+THIRTY = "Anybody can make 30" - A random comment by a player that is bidding 30. Usually reserved for the 3rd or 4th bidder when everyone else has passed the bid.
+
+YOURTURN = "bell ding" - unknown reason for this sound. DO NOT USE
