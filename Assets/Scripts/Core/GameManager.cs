@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections;
 using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour
@@ -6,21 +7,25 @@ public class GameManager : MonoBehaviour
     public List<Player> players;
     private List<Domino> dominoSet;
 
+    // Overall game scores for each team.
+    private int team0GameScore = 0;
+    private int team1GameScore = 0;
+    private const int GAME_TARGET = 10;  // First team to reach (or exceed) 10 wins.
+
+    // A simple struct to store the result of a round.
+    private struct RoundResult
+    {
+        public int team0Tricks;
+        public int team1Tricks;
+    }
+
     void Start()
     {
         Debug.Log("GameManager Start() called.");
-
         InitializePlayers();
         Debug.Log("Players initialized.");
-
-        InitializeDominoSet();
-        Debug.Log("Domino set created.");
-
-        DealDominoes();
-        RunBiddingPhase();
-
-        // Play a full round (all tricks in the hand)
-        PlayRound();
+        // Start the overall game loop as a coroutine.
+        StartCoroutine(GameLoop());
     }
 
     void InitializePlayers()
@@ -59,7 +64,7 @@ public class GameManager : MonoBehaviour
             dominoSet[randomIndex] = temp;
         }
 
-        // For 28 dominoes and 4 players, each gets 7.
+        // For 28 dominoes and 4 players, each gets 7 dominoes.
         int handSize = dominoSet.Count / players.Count;
 
         for (int i = 0; i < players.Count; i++)
@@ -71,7 +76,7 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        // Output each player's hand for verification.
+        // Output each player's hand to the Console for verification.
         foreach (Player player in players)
         {
             string handInfo = "Player " + player.Name + " hand: ";
@@ -102,7 +107,8 @@ public class GameManager : MonoBehaviour
         Debug.Log("Highest bid: " + currentHighBid + " by " + highBidder);
     }
 
-    // Modified PlayTrick now returns the Player who wins the trick.
+    // Simulate one trick round; each player plays one domino.
+    // The trick winner is determined by the highest pip total.
     Player PlayTrick()
     {
         Debug.Log("Starting trick round...");
@@ -145,33 +151,58 @@ public class GameManager : MonoBehaviour
         return trickWinner;
     }
 
-    void PlayRound()
+    // Play one full round (all tricks in the players' hands).
+    RoundResult PlayRound()
     {
         Debug.Log("Starting a full round...");
-        // Assume every player has the same number of dominoes.
         int tricksPerRound = players[0].Hand.Count;
-
-        // Initialize trick counts for teams.
-        int team0Tricks = 0, team1Tricks = 0;
+        RoundResult result = new RoundResult();
+        result.team0Tricks = 0;
+        result.team1Tricks = 0;
 
         for (int i = 0; i < tricksPerRound; i++)
         {
-            // Play one trick and get the winner.
             Player winner = PlayTrick();
             if (winner != null)
             {
-                // Assign the trick to a team based on the player name.
                 if (winner.Name == "North" || winner.Name == "South")
-                    team0Tricks++;
+                    result.team0Tricks++;
                 else if (winner.Name == "East" || winner.Name == "West")
-                    team1Tricks++;
+                    result.team1Tricks++;
             }
         }
-
-        // Log the team trick counts.
         Debug.Log("Round completed.");
-        Debug.Log("Team 0 (North, South) won " + team0Tricks + " tricks.");
-        Debug.Log("Team 1 (East, West) won " + team1Tricks + " tricks.");
-        // Future scoring rules can be applied here.
+        Debug.Log("Team 0 (North, South) won " + result.team0Tricks + " tricks.");
+        Debug.Log("Team 1 (East, West) won " + result.team1Tricks + " tricks.");
+        return result;
+    }
+
+    // The overall game loop that plays rounds until a team reaches the target score.
+    IEnumerator GameLoop()
+    {
+        team0GameScore = 0;
+        team1GameScore = 0;
+        int roundCounter = 1;
+
+        while (team0GameScore < GAME_TARGET && team1GameScore < GAME_TARGET)
+        {
+            Debug.Log("----- Starting Round " + roundCounter + " -----");
+
+            // Reinitialize the domino set and deal new hands every round.
+            InitializeDominoSet();
+            DealDominoes();
+            RunBiddingPhase();
+            RoundResult roundResult = PlayRound();
+            team0GameScore += roundResult.team0Tricks;
+            team1GameScore += roundResult.team1Tricks;
+            Debug.Log("End of Round " + roundCounter + ". Round score: Team0: " + roundResult.team0Tricks + ", Team1: " + roundResult.team1Tricks);
+            Debug.Log("Overall score: Team0: " + team0GameScore + ", Team1: " + team1GameScore);
+            roundCounter++;
+
+            yield return new WaitForSeconds(1.0f);  // Pause between rounds for readability.
+        }
+
+        string winningTeam = (team0GameScore >= GAME_TARGET) ? "Team 0 (North, South)" : "Team 1 (East, West)";
+        Debug.Log("Game over. Winner: " + winningTeam);
     }
 }
