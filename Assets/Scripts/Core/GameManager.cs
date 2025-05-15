@@ -12,6 +12,9 @@ public class GameManager : MonoBehaviour
     private int team1GameScore = 0;
     private const int GAME_TARGET = 10;  // First team to reach (or exceed) 10 wins.
 
+    // To track dealer rotations. dealerIndex represents the current dealer's index in the players list.
+    private int dealerIndex = -1;
+
     // A simple struct to store the result of a round.
     private struct RoundResult
     {
@@ -22,17 +25,23 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         Debug.Log("GameManager Start() called.");
+
+        // Initialize players (seating order remains fixed).
         InitializePlayers();
         Debug.Log("Players initialized.");
+
+        // Determine the initial dealer by doing a one-domino draw.
+        DetermineInitialDealer();
+
         // Start the overall game loop as a coroutine.
         StartCoroutine(GameLoop());
     }
 
+    // Create 4 players with seating order assumed fixed.
+    // For scoring we assume:
+    // Team 0: North and South; Team 1: East and West.
     void InitializePlayers()
     {
-        // Create 4 players.
-        // For scoring, we assume:
-        // Team 0: North and South; Team 1: East and West.
         players = new List<Player>();
         players.Add(new Player("North", PlayerType.AI));   // Team 0
         players.Add(new Player("East", PlayerType.Human));   // Team 1
@@ -40,9 +49,49 @@ public class GameManager : MonoBehaviour
         players.Add(new Player("West", PlayerType.AI));      // Team 1
     }
 
+    // Determines the initial dealer by having each player draw one domino.
+    // The player with the highest total pips on the drawn domino becomes the dealer.
+    void DetermineInitialDealer()
+    {
+        Debug.Log("Determining initial dealer via one-domino draw...");
+        // Create a temporary domino set.
+        List<Domino> tempSet = new List<Domino>();
+        for (int i = 0; i <= 6; i++)
+        {
+            for (int j = i; j <= 6; j++)
+            {
+                tempSet.Add(new Domino(i, j));
+            }
+        }
+        // Shuffle the temporary set using Fisher-Yates.
+        for (int i = 0; i < tempSet.Count; i++)
+        {
+            int randIndex = Random.Range(i, tempSet.Count);
+            Domino temp = tempSet[i];
+            tempSet[i] = tempSet[randIndex];
+            tempSet[randIndex] = temp;
+        }
+        int highestPips = -1;
+        int chosenDealerIndex = -1;
+        // Each player draws one domino.
+        for (int i = 0; i < players.Count; i++)
+        {
+            Domino drawn = tempSet[i]; // For simplicity, player i draws tempSet[i]
+            int pipTotal = drawn.SideA + drawn.SideB;
+            Debug.Log("Player " + players[i].Name + " draws " + drawn.ToString() + " (Total pips: " + pipTotal + ")");
+            if (pipTotal > highestPips)
+            {
+                highestPips = pipTotal;
+                chosenDealerIndex = i;
+            }
+        }
+        dealerIndex = chosenDealerIndex;
+        Debug.Log("Initial Dealer is " + players[dealerIndex].Name);
+    }
+
+    // Reinitialize the main domino set (standard double-six: 28 dominoes).
     void InitializeDominoSet()
     {
-        // Create a standard double-six set (28 dominoes).
         dominoSet = new List<Domino>();
         for (int i = 0; i <= 6; i++)
         {
@@ -53,9 +102,11 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    // Deal dominoes so that non-dealer players (3 players) draw their 7 dominoes first according to the correct drawing order,
+    // and then the dealer gets his 7.
     void DealDominoes()
     {
-        // Shuffle the dominoSet using the Fisher-Yates algorithm.
+        // Shuffle the dominoSet.
         for (int i = 0; i < dominoSet.Count; i++)
         {
             int randomIndex = Random.Range(i, dominoSet.Count);
@@ -64,20 +115,52 @@ public class GameManager : MonoBehaviour
             dominoSet[randomIndex] = temp;
         }
 
-        // For 28 dominoes and 4 players, each gets 7 dominoes.
-        int handSize = dominoSet.Count / players.Count;
-
-        for (int i = 0; i < players.Count; i++)
+        // Build the dealing order.
+        // The drawing order starts with the player immediately to the left of the dealer and wraps around,
+        // with the dealer receiving the dominoes last.
+        // For our seating order [North, East, South, West]:
+        // If the dealer is East (index 1), the expected drawing order is: South, West, North, then dealer East.
+        List<Player> dealingOrder = new List<Player>();
+        int count = players.Count;
+        for (int i = 1; i < count; i++)
         {
-            players[i].Hand = new List<Domino>();
-            for (int j = 0; j < handSize; j++)
-            {
-                players[i].Hand.Add(dominoSet[i * handSize + j]);
-            }
+            dealingOrder.Add(players[(dealerIndex + i) % count]);
+        }
+        dealingOrder.Add(players[dealerIndex]);
+
+        // Debug: Print the computed dealing order.
+        string orderLog = "Dealing Order: ";
+        foreach (Player p in dealingOrder)
+        {
+            orderLog += p.Name + " ";
+        }
+        Debug.Log(orderLog);
+
+        // Clear hands for all players.
+        foreach (Player p in players)
+        {
+            p.Hand = new List<Domino>();
         }
 
-        // Output each player's hand to the Console for verification.
-        foreach (Player player in players)
+        int handSize = 7;
+        // Deal to non-dealers (first count-1 players in the dealingOrder).
+        for (int i = 0; i < dealingOrder.Count - 1; i++)
+        {
+            for (int j = 0; j < handSize; j++)
+            {
+                dealingOrder[i].Hand.Add(dominoSet[i * handSize + j]);
+            }
+        }
+        // Deal to the dealer (last in dealingOrder).
+        int dealerStartIndex = (count - 1) * handSize;
+        for (int j = 0; j < handSize; j++)
+        {
+            dealingOrder[count - 1].Hand.Add(dominoSet[dealerStartIndex + j]);
+        }
+
+        // Print each player's hand in the order they drew.
+        Debug.Log("Player Hands in Drawing Order:");
+        foreach (Player player in dealingOrder)
         {
             string handInfo = "Player " + player.Name + " hand: ";
             foreach (Domino d in player.Hand)
@@ -88,16 +171,25 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    // Bidding phase: The bidding order is determined such that the dealer bids last.
+    // We build a biddingOrder list starting with the player immediately to the left of the dealer and ending with the dealer.
     void RunBiddingPhase()
     {
         int currentHighBid = 0;
         string highBidder = "";
 
-        foreach (Player player in players)
+        List<Player> biddingOrder = new List<Player>();
+        int count = players.Count;
+        for (int i = 1; i < count; i++)
+        {
+            biddingOrder.Add(players[(dealerIndex + i) % count]);
+        }
+        biddingOrder.Add(players[dealerIndex]);
+
+        foreach (Player player in biddingOrder)
         {
             int bid = player.Bid(currentHighBid);
             Debug.Log("Player " + player.Name + " bids: " + bid);
-
             if (bid > currentHighBid)
             {
                 currentHighBid = bid;
@@ -107,8 +199,8 @@ public class GameManager : MonoBehaviour
         Debug.Log("Highest bid: " + currentHighBid + " by " + highBidder);
     }
 
-    // Simulate one trick round; each player plays one domino.
-    // The trick winner is determined by the highest pip total.
+    // Simulate one trick: Each player plays one domino; the trick winner is determined by the highest pip total.
+    // Returns the winning player.
     Player PlayTrick()
     {
         Debug.Log("Starting trick round...");
@@ -151,11 +243,11 @@ public class GameManager : MonoBehaviour
         return trickWinner;
     }
 
-    // Play one full round (all tricks in the players' hands).
-    RoundResult PlayRound()
+    // Play a full round (all tricks in the players’ current hands).
+    private RoundResult PlayRound()
     {
         Debug.Log("Starting a full round...");
-        int tricksPerRound = players[0].Hand.Count;
+        int tricksPerRound = players[0].Hand.Count; // All players have 7 dominoes.
         RoundResult result = new RoundResult();
         result.team0Tricks = 0;
         result.team1Tricks = 0;
@@ -165,6 +257,7 @@ public class GameManager : MonoBehaviour
             Player winner = PlayTrick();
             if (winner != null)
             {
+                // For scoring, assume Team 0 is North and South; Team 1 is East and West.
                 if (winner.Name == "North" || winner.Name == "South")
                     result.team0Tricks++;
                 else if (winner.Name == "East" || winner.Name == "West")
@@ -177,7 +270,8 @@ public class GameManager : MonoBehaviour
         return result;
     }
 
-    // The overall game loop that plays rounds until a team reaches the target score.
+    // Overall game loop: Plays rounds until one team reaches the target score.
+    // After each round, the dealer rotates to the left (to the next player in seating order).
     IEnumerator GameLoop()
     {
         team0GameScore = 0;
@@ -188,7 +282,7 @@ public class GameManager : MonoBehaviour
         {
             Debug.Log("----- Starting Round " + roundCounter + " -----");
 
-            // Reinitialize the domino set and deal new hands every round.
+            // Reinitialize the domino set & deal new hands.
             InitializeDominoSet();
             DealDominoes();
             RunBiddingPhase();
@@ -199,7 +293,11 @@ public class GameManager : MonoBehaviour
             Debug.Log("Overall score: Team0: " + team0GameScore + ", Team1: " + team1GameScore);
             roundCounter++;
 
-            yield return new WaitForSeconds(1.0f);  // Pause between rounds for readability.
+            // Rotate the dealer: move to the next player in the fixed seating order.
+            dealerIndex = (dealerIndex + 1) % players.Count;
+            Debug.Log("New dealer for next round is: " + players[dealerIndex].Name);
+
+            yield return new WaitForSeconds(1.0f);  // Pause between rounds for clarity.
         }
 
         string winningTeam = (team0GameScore >= GAME_TARGET) ? "Team 0 (North, South)" : "Team 1 (East, West)";
