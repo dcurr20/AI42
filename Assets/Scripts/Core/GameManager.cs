@@ -17,11 +17,11 @@ public class GameManager : MonoBehaviour
         InitializeDominoSet();
         Debug.Log("Domino set created.");
 
-        // DealDominoes();
-        // Debug.Log("DealDominoes() placeholder called.");
+        // Re-enable the call to DealDominoes() so it runs:
+        DealDominoes();
 
+        // Optionally, you can leave out StartGameLoop() for now if you aren't testing it:
         // StartGameLoop();
-        // Debug.Log("StartGameLoop() placeholder called.");
     }
 
     void InitializePlayers()
@@ -47,8 +47,42 @@ public class GameManager : MonoBehaviour
 
     void DealDominoes()
     {
-        // For now, we are not implementing full deal logic.
-        Debug.Log("DealDominoes() placeholder called.");
+        // Shuffle the dominoSet using the Fisher-Yates algorithm
+        for (int i = 0; i < dominoSet.Count; i++)
+        {
+            int randomIndex = UnityEngine.Random.Range(i, dominoSet.Count);
+            Domino temp = dominoSet[i];
+            dominoSet[i] = dominoSet[randomIndex];
+            dominoSet[randomIndex] = temp;
+        }
+
+        // Calculate how many dominoes each player should receive.
+        // For a standard double-six set, there are 28 dominoes.
+        // With 4 players, each gets 7 dominoes.
+        int handSize = dominoSet.Count / players.Count;
+
+        // Assign dominoes to each player's hand
+        for (int i = 0; i < players.Count; i++)
+        {
+            // Create a new hand list for the player
+            players[i].Hand = new List<Domino>();
+            // Deal 'handSize' dominoes to the player
+            for (int j = 0; j < handSize; j++)
+            {
+                players[i].Hand.Add(dominoSet[i * handSize + j]);
+            }
+        }
+
+        // Output each player's hand to the Console for verification
+        foreach (Player player in players)
+        {
+            string handInfo = "Player " + player.Name + " hand: ";
+            foreach (Domino d in player.Hand)
+            {
+                handInfo += d.ToString() + " ";
+            }
+            Debug.Log(handInfo);
+        }
     }
 
     void StartGameLoop()
