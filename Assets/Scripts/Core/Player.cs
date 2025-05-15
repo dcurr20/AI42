@@ -16,20 +16,30 @@ public class Player
         Hand = new List<Domino>();
     }
 
-    // Simple bidding logic: if AI, bid currentHighBid + 1; if Human, simulate a pass.
+    // AI bidding logic: compute the hand's total pips and derive a potential bid.
+    // The bid will be between 30 and 41. If the hand isn’t strong enough (total pips below 40)
+    // or if the potential bid isn’t more than the current bid, the AI “passes” (returns currentHighBid).
     public int Bid(int currentHighBid)
     {
-        if (Type == PlayerType.AI)
+        if (Type == PlayerType.Human)
         {
-            return currentHighBid + 1;
-        }
-        else
-        {
+            // For now, human input is not implemented; simulate as pass.
             return currentHighBid;
         }
+        int handPips = 0;
+        foreach (Domino d in Hand)
+        {
+            handPips += d.SideA + d.SideB;
+        }
+        // Simple heuristic: divide handPips by 2 and clamp to [30, 41].
+        int potentialBid = Mathf.Clamp(handPips / 2, 30, 41);
+        if (potentialBid > currentHighBid && handPips >= 40)
+        {
+            return potentialBid;
+        }
+        return currentHighBid;
     }
 
-    // For simulation, play the first domino in hand.
     public Domino PlayDomino()
     {
         if (Hand.Count > 0)
