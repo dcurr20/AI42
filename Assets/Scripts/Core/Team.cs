@@ -1,8 +1,8 @@
 ﻿using System;
+using UnityEngine;
 
-public class Class1
+// Rename Class1 to Team
+public class Team
 {
-	public Class1()
-	{
-	}
+    // For now, just leave this empty or add initial code when ready.
 }

@@ -1,8 +1,8 @@
 ﻿using System;
+using UnityEngine;
 
-public class Class1
+// Rename Class1 to Trick
+public class Trick
 {
-	public Class1()
-	{
-	}
+    // Implement trick logic later.
 }

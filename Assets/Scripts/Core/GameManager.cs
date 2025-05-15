@@ -1,25 +1,31 @@
 ﻿using System;
-
 using UnityEngine;
 using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour
 {
     public List<Player> players;
-
     private List<Domino> dominoSet;
 
     void Start()
     {
+        Debug.Log("GameManager Start() called.");
+
         InitializePlayers();
+        Debug.Log("Players initialized.");
+
         InitializeDominoSet();
-        DealDominoes();
-        StartGameLoop();
+        Debug.Log("Domino set created.");
+
+        // DealDominoes();
+        // Debug.Log("DealDominoes() placeholder called.");
+
+        // StartGameLoop();
+        // Debug.Log("StartGameLoop() placeholder called.");
     }
 
     void InitializePlayers()
     {
-        // Example: Create 4 players (adjust based on human vs. AI setup)  
         players = new List<Player>();
         players.Add(new Player("North", PlayerType.AI));
         players.Add(new Player("East", PlayerType.Human));
@@ -41,14 +47,13 @@ public class GameManager : MonoBehaviour
 
     void DealDominoes()
     {
-        // Shuffle dominoSet and deal evenly to players  
-        // The exact mechanism might consider game variations  
+        // For now, we are not implementing full deal logic.
+        Debug.Log("DealDominoes() placeholder called.");
     }
 
     void StartGameLoop()
     {
-        // Handle bidding, trick rounds and scoring based on your rules  
+        // For now, we are not implementing the full game loop.
+        Debug.Log("StartGameLoop() placeholder called.");
     }
-
-    // Additional methods for bidding, playing rounds, and updating scores…  
 }
