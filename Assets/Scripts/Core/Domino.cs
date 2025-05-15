@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Domino
 {
@@ -12,15 +11,8 @@ public class Domino
         SideB = sideB;
     }
 
-    // Useful for UI display  
     public override string ToString()
     {
-        return $"{SideA}-{SideB}";
-    }
-
-    public bool Matches(Domino other)
-    {
-        return SideA == other.SideA || SideA == other.SideB ||
-               SideB == other.SideA || SideB == other.SideB;
+        return SideA + "-" + SideB;
     }
 }

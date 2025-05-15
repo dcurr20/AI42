@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour
@@ -17,15 +16,16 @@ public class GameManager : MonoBehaviour
         InitializeDominoSet();
         Debug.Log("Domino set created.");
 
-        // Re-enable the call to DealDominoes() so it runs:
         DealDominoes();
+        RunBiddingPhase();
 
-        // Optionally, you can leave out StartGameLoop() for now if you aren't testing it:
+        // Future implementation for full game loop:
         // StartGameLoop();
     }
 
     void InitializePlayers()
     {
+        // Create 4 players; adjust as needed.
         players = new List<Player>();
         players.Add(new Player("North", PlayerType.AI));
         players.Add(new Player("East", PlayerType.Human));
@@ -35,6 +35,7 @@ public class GameManager : MonoBehaviour
 
     void InitializeDominoSet()
     {
+        // Create a standard double-six set (28 dominoes).
         dominoSet = new List<Domino>();
         for (int i = 0; i <= 6; i++)
         {
@@ -47,33 +48,29 @@ public class GameManager : MonoBehaviour
 
     void DealDominoes()
     {
-        // Shuffle the dominoSet using the Fisher-Yates algorithm
+        // Shuffle the dominoSet using the Fisher-Yates algorithm.
         for (int i = 0; i < dominoSet.Count; i++)
         {
-            int randomIndex = UnityEngine.Random.Range(i, dominoSet.Count);
+            int randomIndex = Random.Range(i, dominoSet.Count);
             Domino temp = dominoSet[i];
             dominoSet[i] = dominoSet[randomIndex];
             dominoSet[randomIndex] = temp;
         }
 
-        // Calculate how many dominoes each player should receive.
-        // For a standard double-six set, there are 28 dominoes.
-        // With 4 players, each gets 7 dominoes.
+        // Determine how many dominoes each player gets.
         int handSize = dominoSet.Count / players.Count;
 
-        // Assign dominoes to each player's hand
+        // Distribute dominoes to each player's hand.
         for (int i = 0; i < players.Count; i++)
         {
-            // Create a new hand list for the player
             players[i].Hand = new List<Domino>();
-            // Deal 'handSize' dominoes to the player
             for (int j = 0; j < handSize; j++)
             {
                 players[i].Hand.Add(dominoSet[i * handSize + j]);
             }
         }
 
-        // Output each player's hand to the Console for verification
+        // Output each player's hand to the Console for verification.
         foreach (Player player in players)
         {
             string handInfo = "Player " + player.Name + " hand: ";
@@ -85,9 +82,29 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    void StartGameLoop()
+    void RunBiddingPhase()
     {
-        // For now, we are not implementing the full game loop.
-        Debug.Log("StartGameLoop() placeholder called.");
+        int currentHighBid = 0;
+        string highBidder = "";
+
+        // Simulate a simple bidding phase.
+        foreach (Player player in players)
+        {
+            int bid = player.Bid(currentHighBid);
+            Debug.Log("Player " + player.Name + " bids: " + bid);
+
+            if (bid > currentHighBid)
+            {
+                currentHighBid = bid;
+                highBidder = player.Name;
+            }
+        }
+        Debug.Log("Highest bid: " + currentHighBid + " by " + highBidder);
     }
+
+    // Future placeholder for a full game loop:
+    // void StartGameLoop()
+    // {
+    //     Debug.Log("StartGameLoop() placeholder called.");
+    // }
 }
