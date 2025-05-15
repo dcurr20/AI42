@@ -18,9 +18,7 @@ public class GameManager : MonoBehaviour
 
         DealDominoes();
         RunBiddingPhase();
-
-        // Future implementation for full game loop:
-        // StartGameLoop();
+        PlayTrick();  // New: simulate one trick round.
     }
 
     void InitializePlayers()
@@ -57,10 +55,8 @@ public class GameManager : MonoBehaviour
             dominoSet[randomIndex] = temp;
         }
 
-        // Determine how many dominoes each player gets.
+        // Determine hand size: for 28 dominoes and 4 players, each gets 7.
         int handSize = dominoSet.Count / players.Count;
-
-        // Distribute dominoes to each player's hand.
         for (int i = 0; i < players.Count; i++)
         {
             players[i].Hand = new List<Domino>();
@@ -87,7 +83,6 @@ public class GameManager : MonoBehaviour
         int currentHighBid = 0;
         string highBidder = "";
 
-        // Simulate a simple bidding phase.
         foreach (Player player in players)
         {
             int bid = player.Bid(currentHighBid);
@@ -102,9 +97,47 @@ public class GameManager : MonoBehaviour
         Debug.Log("Highest bid: " + currentHighBid + " by " + highBidder);
     }
 
-    // Future placeholder for a full game loop:
-    // void StartGameLoop()
-    // {
-    //     Debug.Log("StartGameLoop() placeholder called.");
-    // }
+    // New method: simulate one trick round.
+    void PlayTrick()
+    {
+        Debug.Log("Starting trick round...");
+        // Each player plays one domino.
+        Dictionary<Player, Domino> trickPlays = new Dictionary<Player, Domino>();
+
+        foreach (Player player in players)
+        {
+            Domino played = player.PlayDomino();
+            if (played != null)
+            {
+                trickPlays[player] = played;
+                Debug.Log("Player " + player.Name + " plays: " + played.ToString());
+            }
+            else
+            {
+                Debug.Log("Player " + player.Name + " has no domino left to play.");
+            }
+        }
+
+        // Determine the winning domino based on highest pip total (sideA + sideB).
+        Player trickWinner = null;
+        int highestPipTotal = -1;
+        foreach (KeyValuePair<Player, Domino> kvp in trickPlays)
+        {
+            int pipTotal = kvp.Value.SideA + kvp.Value.SideB;
+            if (pipTotal > highestPipTotal)
+            {
+                highestPipTotal = pipTotal;
+                trickWinner = kvp.Key;
+            }
+        }
+
+        if (trickWinner != null)
+        {
+            Debug.Log("Trick winner is " + trickWinner.Name + " with a total of " + highestPipTotal);
+        }
+        else
+        {
+            Debug.Log("No trick winner could be determined.");
+        }
+    }
 }

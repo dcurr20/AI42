@@ -28,4 +28,16 @@ public class Player
             return currentHighBid;
         }
     }
+
+    // For simulation, play the first domino in hand.
+    public Domino PlayDomino()
+    {
+        if (Hand.Count > 0)
+        {
+            Domino played = Hand[0];
+            Hand.RemoveAt(0);
+            return played;
+        }
+        return null;
+    }
 }
