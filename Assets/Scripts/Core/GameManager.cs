@@ -14,8 +14,9 @@ public class GameManager : MonoBehaviour
     private int dealerIndex = -1;
     private int currentTrumpSuit = -1;
     private Player winningBidder = null;
-    private Player trickLeader = null;
+    private Player trickLeader = null; // will hold the leader for the current trick
 
+    // Structure to record a round's result
     private struct RoundResult
     {
         public int team0Tricks;
@@ -28,11 +29,10 @@ public class GameManager : MonoBehaviour
         InitializePlayers();
         Debug.Log("Players initialized.");
         DetermineInitialDealer();
-
-        // Correctly start the coroutine for GameLoop.
         StartCoroutine(GameLoop());
     }
 
+    // Create four players in fixed seating order.
     void InitializePlayers()
     {
         players = new List<Player>();
@@ -42,6 +42,7 @@ public class GameManager : MonoBehaviour
         players.Add(new Player("West", PlayerType.AI));
     }
 
+    // Determine the initial dealer using one-domino draw.
     void DetermineInitialDealer()
     {
         Debug.Log("Determining initial dealer via one-domino draw...");
@@ -49,11 +50,9 @@ public class GameManager : MonoBehaviour
         for (int i = 0; i <= 6; i++)
         {
             for (int j = i; j <= 6; j++)
-            {
                 tempSet.Add(new Domino(i, j));
-            }
         }
-
+        // Shuffle the temp set using Fisher-Yates.
         for (int i = 0; i < tempSet.Count; i++)
         {
             int randIndex = Random.Range(i, tempSet.Count);
@@ -61,39 +60,39 @@ public class GameManager : MonoBehaviour
             tempSet[i] = tempSet[randIndex];
             tempSet[randIndex] = temp;
         }
-
         int highestPips = -1;
         int chosenDealerIndex = -1;
         for (int i = 0; i < players.Count; i++)
         {
             Domino drawn = tempSet[i];
             int pipTotal = drawn.SideA + drawn.SideB;
-            Debug.Log("Player " + players[i].Name + " draws " + drawn.ToString() + " (Total pips: " + pipTotal + ")");
+            Debug.Log("Player " + players[i].Name + " draws " + drawn.ToString() +
+                      " (Total pips: " + pipTotal + ")");
             if (pipTotal > highestPips)
             {
                 highestPips = pipTotal;
                 chosenDealerIndex = i;
             }
         }
-
         dealerIndex = chosenDealerIndex;
         Debug.Log("Initial Dealer is " + players[dealerIndex].Name);
     }
 
+    // Prepare the main domino set (double-six = 28 dominoes).
     void InitializeDominoSet()
     {
         dominoSet = new List<Domino>();
         for (int i = 0; i <= 6; i++)
         {
             for (int j = i; j <= 6; j++)
-            {
                 dominoSet.Add(new Domino(i, j));
-            }
         }
     }
 
+    // Shuffle and deal dominoes.
     void DealDominoes()
     {
+        // Shuffle dominoSet in place.
         for (int i = 0; i < dominoSet.Count; i++)
         {
             int randomIndex = Random.Range(i, dominoSet.Count);
@@ -101,7 +100,7 @@ public class GameManager : MonoBehaviour
             dominoSet[i] = dominoSet[randomIndex];
             dominoSet[randomIndex] = temp;
         }
-
+        // Build the dealing order (players to dealer's left first).
         List<Player> dealingOrder = new List<Player>();
         int count = players.Count;
         for (int i = 1; i < count; i++)
@@ -112,43 +111,36 @@ public class GameManager : MonoBehaviour
 
         string orderLog = "Dealing Order: ";
         foreach (Player p in dealingOrder)
-        {
             orderLog += p.Name + " ";
-        }
         Debug.Log(orderLog);
 
+        // Clear existing hands.
         foreach (Player p in players)
-        {
             p.Hand = new List<Domino>();
-        }
 
         int handSize = 7;
+        // Deal for non-dealers.
         for (int i = 0; i < dealingOrder.Count - 1; i++)
         {
             for (int j = 0; j < handSize; j++)
-            {
                 dealingOrder[i].Hand.Add(dominoSet[i * handSize + j]);
-            }
         }
-
+        // Deal for the dealer.
         int dealerStartIndex = (count - 1) * handSize;
         for (int j = 0; j < handSize; j++)
-        {
             dealingOrder[count - 1].Hand.Add(dominoSet[dealerStartIndex + j]);
-        }
 
         Debug.Log("Player Hands in Drawing Order:");
         foreach (Player player in dealingOrder)
         {
             string handInfo = "Player " + player.Name + " hand: ";
             foreach (Domino d in player.Hand)
-            {
                 handInfo += d.ToString() + " ";
-            }
             Debug.Log(handInfo);
         }
     }
 
+    // Bidding phase: players bid in turn (starting with player to dealer's left, dealer last).
     void RunBiddingPhase()
     {
         int currentHighBid = 0;
@@ -157,15 +149,17 @@ public class GameManager : MonoBehaviour
         List<Player> biddingOrder = new List<Player>();
         int count = players.Count;
         for (int i = 1; i < count; i++)
-        {
             biddingOrder.Add(players[(dealerIndex + i) % count]);
-        }
         biddingOrder.Add(players[dealerIndex]);
 
         foreach (Player player in biddingOrder)
         {
             int bid = player.Bid(currentHighBid);
-            Debug.Log("Player " + player.Name + " bids: " + bid);
+            if (bid == currentHighBid)
+                Debug.Log("Player " + player.Name + " bids: Pass");
+            else
+                Debug.Log("Player " + player.Name + " bids: " + bid);
+
             if (bid > currentHighBid)
             {
                 currentHighBid = bid;
@@ -178,44 +172,82 @@ public class GameManager : MonoBehaviour
         {
             currentTrumpSuit = DetermineTrumpSuit(winningBidder);
             Debug.Log("Trump suit chosen by " + winningBidder.Name + ": " + currentTrumpSuit);
-            trickLeader = winningBidder;
+            trickLeader = winningBidder;  // winning bidder leads the first trick.
         }
-    }
-
-    IEnumerator GameLoop()
-    {
-        team0GameScore = 0;
-        team1GameScore = 0;
-        int roundCounter = 1;
-
-        while (team0GameScore < GAME_TARGET && team1GameScore < GAME_TARGET)
+        else
         {
-            Debug.Log("----- Starting Round " + roundCounter + " -----");
+            trickLeader = players[(dealerIndex + 1) % count];  // fallback
+        }
+    }
 
-            InitializeDominoSet();
-            DealDominoes();
-            RunBiddingPhase();
-            RoundResult roundResult = PlayRound();
+    // Determine trump suit from bidder's hand (by most frequent pip across both sides).
+    int DetermineTrumpSuit(Player bidder)
+    {
+        int[] frequency = new int[7];
+        foreach (Domino d in bidder.Hand)
+        {
+            frequency[d.SideA]++;
+            frequency[d.SideB]++;
+        }
+        int maxFreq = -1, trump = 0;
+        for (int i = 0; i < 7; i++)
+        {
+            if (frequency[i] > maxFreq || (frequency[i] == maxFreq && i > trump))
+            {
+                maxFreq = frequency[i];
+                trump = i;
+            }
+        }
+        return trump;
+    }
 
-            team0GameScore += roundResult.team0Tricks;
-            team1GameScore += roundResult.team1Tricks;
+    // Play a single trick: starting with the current trickLeader, each player plays one domino.
+    Player PlayTrick()
+    {
+        Debug.Log("Starting trick round. Current trick leader: " + trickLeader.Name);
+        Dictionary<Player, Domino> trickPlays = new Dictionary<Player, Domino>();
 
-            Debug.Log("End of Round " + roundCounter + ". Round score: Team0: " + roundResult.team0Tricks + ", Team1: " + roundResult.team1Tricks);
-            Debug.Log("Overall score: Team0: " + team0GameScore + ", Team1: " + team1GameScore);
-
-            roundCounter++;
-
-            dealerIndex = (dealerIndex + 1) % players.Count;
-            Debug.Log("New dealer for next round is: " + players[dealerIndex].Name);
-
-            yield return new WaitForSeconds(1.0f);
+        int trickStartIndex = players.IndexOf(trickLeader);
+        for (int i = 0; i < players.Count; i++)
+        {
+            Player currentPlayer = players[(trickStartIndex + i) % players.Count];
+            Domino played = currentPlayer.PlayDomino();
+            if (played != null)
+            {
+                trickPlays[currentPlayer] = played;
+                Debug.Log("Player " + currentPlayer.Name + " plays: " + played.ToString());
+            }
+            else
+            {
+                Debug.Log("Player " + currentPlayer.Name + " has no domino left to play.");
+            }
         }
 
-        string winningTeam = (team0GameScore >= GAME_TARGET) ? "Team 0 (North, South)" : "Team 1 (East, West)";
-        Debug.Log("Game over. Winner: " + winningTeam);
+        Player trickWinner = null;
+        int highestPipTotal = -1;
+        foreach (KeyValuePair<Player, Domino> kvp in trickPlays)
+        {
+            int pipTotal = kvp.Value.SideA + kvp.Value.SideB;
+            if (pipTotal > highestPipTotal)
+            {
+                highestPipTotal = pipTotal;
+                trickWinner = kvp.Key;
+            }
+        }
+        if (trickWinner != null)
+        {
+            Debug.Log("Trick winner is " + trickWinner.Name + " with a total of " + highestPipTotal);
+            trickLeader = trickWinner; // update leader for next trick
+        }
+        else
+        {
+            Debug.Log("No trick winner could be determined.");
+        }
+        return trickWinner;
     }
-    
-    private RoundResult PlayRound()
+
+    // Play a full round (each player plays one domino per trick).
+    RoundResult PlayRound()
     {
         Debug.Log("Starting a full round...");
         int tricksPerRound = players[0].Hand.Count;
@@ -234,77 +266,43 @@ public class GameManager : MonoBehaviour
                     result.team1Tricks++;
             }
         }
-
         Debug.Log("Round completed.");
         Debug.Log("Team 0 (North, South) won " + result.team0Tricks + " tricks.");
         Debug.Log("Team 1 (East, West) won " + result.team1Tricks + " tricks.");
         return result;
     }
 
-    private int DetermineTrumpSuit(Player bidder)
+    // The overall game loop.
+    IEnumerator GameLoop()
     {
-        int[] frequency = new int[7];
-        foreach (Domino d in bidder.Hand)
+        team0GameScore = 0;
+        team1GameScore = 0;
+        int roundCounter = 1;
+        while (team0GameScore < GAME_TARGET && team1GameScore < GAME_TARGET)
         {
-            frequency[d.SideA]++;
-            frequency[d.SideB]++;
-        }
+            Debug.Log("----- Starting Round " + roundCounter + " -----");
 
-        int maxFreq = -1, trump = 0;
-        for (int i = 0; i < 7; i++)
-        {
-            if (frequency[i] > maxFreq || (frequency[i] == maxFreq && i > trump))
-            {
-                maxFreq = frequency[i];
-                trump = i;
-            }
-        }
+            InitializeDominoSet();
+            DealDominoes();
+            RunBiddingPhase();
+            RoundResult roundResult = PlayRound();
 
-        return trump;
+            team0GameScore += roundResult.team0Tricks;
+            team1GameScore += roundResult.team1Tricks;
+
+            Debug.Log("End of Round " + roundCounter + ". Round score: Team0: " + roundResult.team0Tricks +
+                      ", Team1: " + roundResult.team1Tricks);
+            Debug.Log("Overall score: Team0: " + team0GameScore + ", Team1: " + team1GameScore);
+
+            roundCounter++;
+
+            // Rotate the dealer for the next round.
+            dealerIndex = (dealerIndex + 1) % players.Count;
+            Debug.Log("New dealer for next round is: " + players[dealerIndex].Name);
+
+            yield return new WaitForSeconds(1.0f);
+        }
+        string winningTeam = (team0GameScore >= GAME_TARGET) ? "Team 0 (North, South)" : "Team 1 (East, West)";
+        Debug.Log("Game over. Winner: " + winningTeam);
     }
-
-    Player PlayTrick()
-    {
-        Debug.Log("Starting trick round...");
-        Dictionary<Player, Domino> trickPlays = new Dictionary<Player, Domino>();
-
-        foreach (Player player in players)
-        {
-            Domino played = player.PlayDomino();
-            if (played != null)
-            {
-                trickPlays[player] = played;
-                Debug.Log("Player " + player.Name + " plays: " + played.ToString());
-            }
-            else
-            {
-                Debug.Log("Player " + player.Name + " has no domino left to play.");
-            }
-        }
-
-        Player trickWinner = null;
-        int highestPipTotal = -1;
-        foreach (KeyValuePair<Player, Domino> kvp in trickPlays)
-        {
-            int pipTotal = kvp.Value.SideA + kvp.Value.SideB;
-            if (pipTotal > highestPipTotal)
-            {
-                highestPipTotal = pipTotal;
-                trickWinner = kvp.Key;
-            }
-        }
-
-        if (trickWinner != null)
-        {
-            Debug.Log("Trick winner is " + trickWinner.Name + " with a total of " + highestPipTotal);
-            trickLeader = trickWinner;  // Ensure the next trick starts with the winner of this one.
-        }
-        else
-        {
-            Debug.Log("No trick winner could be determined.");
-        }
-
-        return trickWinner;
-    }
-
 }
