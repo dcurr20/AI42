@@ -16,6 +16,19 @@ public class GameManager : MonoBehaviour
     private Player winningBidder = null;
     private Player trickLeader = null; // will hold the leader for the current trick
 
+    public int GetTrumpSuit()
+    {
+        // Placeholder: return a dummy trump suit value
+        return 2;
+    }
+
+    public int GetTeamScore(int teamIndex)
+    {
+        // Placeholder: return a dummy team score.
+        // For example, team 0 could be North/South and team 1 East/West.
+        return (teamIndex == 0) ? 4 : 3;
+    }
+
     // Structure to record a round's result
     private struct RoundResult
     {

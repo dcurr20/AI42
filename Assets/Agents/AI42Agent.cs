@@ -13,17 +13,17 @@ public class AI42Agent : Agent
 
     public override void Initialize()
     {
-        // Initialize agent parameters if needed.
+        // Initialize agent parameters if needed. 
     }
 
     // Collect observations for the ML model.
     public override void CollectObservations(VectorSensor sensor)
     {
         Debug.Log("AI42Agent is collecting observations.");
-        // Use stub methods from GameManager (to be expanded later).
         sensor.AddObservation(gameManager.GetCurrentBid());
         sensor.AddObservation(gameManager.CalculateHandValue());
-        // Future observations (e.g., trump suit, team score) can be added here.
+        sensor.AddObservation(gameManager.GetTrumpSuit());   // new stub method
+        sensor.AddObservation(gameManager.GetTeamScore(0));   // new stub method for team 0
     }
 
     // Map the agent's actions (discrete output) to a bidding decision.
@@ -42,7 +42,7 @@ public class AI42Agent : Agent
     public override void Heuristic(in ActionBuffers actionsOut)
     {
         var discreteActionsOut = actionsOut.DiscreteActions;
-        discreteActionsOut[0] = 30; // Default bid value for testing.
+        discreteActionsOut[0] = 32; // Default bid value for testing.
     }
 
     // For testing, trigger decision requests using Space.
