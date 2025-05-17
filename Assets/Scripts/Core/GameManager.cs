@@ -32,18 +32,18 @@ public class GameManager : MonoBehaviour
         StartCoroutine(GameLoop());
     }
 
-    // Create four players in fixed seating order.
+    // Create four players in a fixed seating order.
     void InitializePlayers()
     {
         players = new List<Player>();
-        // For testing the ML Agent integration, let’s assume "North" is controlled by ML.
+        // For testing ML integration, let’s assume "North" is controlled by the ML Agent.
         players.Add(new Player("North", PlayerType.AI));
         players.Add(new Player("East", PlayerType.Human));
         players.Add(new Player("South", PlayerType.AI));
         players.Add(new Player("West", PlayerType.AI));
     }
 
-    // Determine the initial dealer using one-domino draw.
+    // Determine the initial dealer via one-domino draw.
     void DetermineInitialDealer()
     {
         Debug.Log("Determining initial dealer via one-domino draw...");
@@ -53,7 +53,7 @@ public class GameManager : MonoBehaviour
             for (int j = i; j <= 6; j++)
                 tempSet.Add(new Domino(i, j));
         }
-        // Shuffle the temp set using Fisher-Yates.
+        // Shuffle using Fisher-Yates.
         for (int i = 0; i < tempSet.Count; i++)
         {
             int randIndex = Random.Range(i, tempSet.Count);
@@ -79,7 +79,7 @@ public class GameManager : MonoBehaviour
         Debug.Log("Initial Dealer is " + players[dealerIndex].Name);
     }
 
-    // Prepare the main domino set.
+    // Prepare the domino set.
     void InitializeDominoSet()
     {
         dominoSet = new List<Domino>();
@@ -101,23 +101,21 @@ public class GameManager : MonoBehaviour
             dominoSet[i] = dominoSet[randomIndex];
             dominoSet[randomIndex] = temp;
         }
-        // Build the dealing order: starting with player immediately to dealer's left.
+        // Build the dealing order (players to dealer's left first).
         List<Player> dealingOrder = new List<Player>();
         int count = players.Count;
         for (int i = 1; i < count; i++)
         {
             dealingOrder.Add(players[(dealerIndex + i) % count]);
         }
-        dealingOrder.Add(players[dealerIndex]); // Dealer dealt last
+        dealingOrder.Add(players[dealerIndex]); // Dealer gets dealt last
 
         string orderLog = "Dealing Order: ";
         foreach (Player p in dealingOrder)
-        {
             orderLog += p.Name + " ";
-        }
         Debug.Log(orderLog);
 
-        // Clear hands.
+        // Clear old hands.
         foreach (Player p in players)
             p.Hand = new List<Domino>();
 
@@ -143,8 +141,8 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // Bidding phase: players bid in turn (starting with player to dealer's left, dealer bids last).
-    // For testing, we override the bid for "North" using the ML Agent's decision.
+    // Bidding phase.
+    // ML bidding: for the player "North", we override bidding with the ML agent's decision.
     void RunBiddingPhase()
     {
         int currentHighBid = 0;
@@ -154,23 +152,21 @@ public class GameManager : MonoBehaviour
         int count = players.Count;
         for (int i = 1; i < count; i++)
             biddingOrder.Add(players[(dealerIndex + i) % count]);
-        biddingOrder.Add(players[dealerIndex]);
+        biddingOrder.Add(players[dealerIndex]); // Dealer last
 
-        // Look for the ML Agent attached to AgentController.
+        // Find the ML Agent attached to AgentController.
         AI42Agent mlAgent = null;
         GameObject agentControllerGO = GameObject.Find("AgentController");
         if (agentControllerGO != null)
-        {
             mlAgent = agentControllerGO.GetComponent<AI42Agent>();
-        }
 
         foreach (Player player in biddingOrder)
         {
-            int bid = currentHighBid; // default bid value
+            int bid = currentHighBid; // default value
 
             if (player.Name == "North" && mlAgent != null)
             {
-                // Use the bid provided by the ML agent.
+                // Use the ML Agent's bid.
                 bid = mlAgent.agentBid;
                 Debug.Log("ML Agent for " + player.Name + " bids: " + bid);
             }
@@ -194,16 +190,30 @@ public class GameManager : MonoBehaviour
         {
             currentTrumpSuit = DetermineTrumpSuit(winningBidder);
             Debug.Log("Trump suit chosen by " + winningBidder.Name + ": " + currentTrumpSuit);
-            // Winning bidder leads the first trick.
-            trickLeader = winningBidder;
+            trickLeader = winningBidder; // Winning bidder leads the first trick.
         }
         else
         {
-            trickLeader = players[(dealerIndex + 1) % count];  // fallback
+            trickLeader = players[(dealerIndex + 1) % count]; // fallback
+        }
+
+        // Apply reward to the ML Agent based on bidding outcome.
+        if (mlAgent != null)
+        {
+            if (winningBidder != null && winningBidder.Name == "North")
+            {
+                mlAgent.AddReward(1.0f);
+                Debug.Log("ML Agent rewarded +1.0 for winning the bid.");
+            }
+            else
+            {
+                mlAgent.AddReward(-0.5f);
+                Debug.Log("ML Agent penalized -0.5 for not winning the bid.");
+            }
         }
     }
 
-    // Determine trump suit by counting frequency of pips in the bidder's hand.
+    // Determine trump suit based on bidder's hand pip frequencies.
     int DetermineTrumpSuit(Player bidder)
     {
         int[] frequency = new int[7];
@@ -224,7 +234,7 @@ public class GameManager : MonoBehaviour
         return trump;
     }
 
-    // Play a single trick: starting with the current trickLeader.
+    // Play a single trick, starting with the current trickLeader.
     Player PlayTrick()
     {
         Debug.Log("Starting trick round. Current trick leader: " + trickLeader.Name);
@@ -245,6 +255,7 @@ public class GameManager : MonoBehaviour
                 Debug.Log("Player " + currentPlayer.Name + " has no domino left to play.");
             }
         }
+
         Player trickWinner = null;
         int highestPipTotal = -1;
         foreach (KeyValuePair<Player, Domino> kvp in trickPlays)
@@ -259,7 +270,7 @@ public class GameManager : MonoBehaviour
         if (trickWinner != null)
         {
             Debug.Log("Trick winner is " + trickWinner.Name + " with total pips " + highestPipTotal);
-            trickLeader = trickWinner; // Update leader for next trick.
+            trickLeader = trickWinner; // Update leader.
         }
         else
         {
@@ -268,7 +279,7 @@ public class GameManager : MonoBehaviour
         return trickWinner;
     }
 
-    // Play a full round (each player plays one domino per trick).
+    // Play a round (each player plays one domino per trick).
     RoundResult PlayRound()
     {
         Debug.Log("Starting a full round...");
@@ -330,13 +341,13 @@ public class GameManager : MonoBehaviour
     // Stub methods to support ML Agent observations.
     public int GetCurrentBid()
     {
-        // Placeholder: return a dummy current bid.
+        // Placeholder: return dummy current bid.
         return 30;
     }
 
     public int CalculateHandValue()
     {
-        // Placeholder: return a dummy hand value.
+        // Placeholder: return dummy hand value.
         return 50;
     }
 }

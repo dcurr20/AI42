@@ -5,54 +5,47 @@ using Unity.MLAgents.Sensors;
 
 public class AI42Agent : Agent
 {
-    // Reference to GameManager (set via drag-and-drop in the Inspector)
+    // Reference to GameManager—assign via Inspector.
     public GameManager gameManager;
 
-    // This will store the agent's chosen bid value.
+    // Stores the ML Agent's chosen bid value.
     public int agentBid = 30; // Default initial bid
 
     public override void Initialize()
     {
-        // Initialization code if needed.
+        // Initialize agent parameters if needed.
     }
 
-    // Collect observations from the game state using GameManager.
+    // Collect observations for the ML model.
     public override void CollectObservations(VectorSensor sensor)
     {
         Debug.Log("AI42Agent is collecting observations.");
-
-        // For now, use stub methods from GameManager.
-        // As you expand, add more detailed observations (e.g., trump suit, team score, etc.)
+        // Use stub methods from GameManager (to be expanded later).
         sensor.AddObservation(gameManager.GetCurrentBid());
         sensor.AddObservation(gameManager.CalculateHandValue());
-        // Future observations could include:
-        // sensor.AddObservation(gameManager.GetTrumpSuit());
-        // sensor.AddObservation(gameManager.GetTeamScore(0)); etc.
+        // Future observations (e.g., trump suit, team score) can be added here.
     }
 
-    // Map the agent's actions to its decision in the game.
+    // Map the agent's actions (discrete output) to a bidding decision.
     public override void OnActionReceived(ActionBuffers actions)
     {
-        // This example assumes a single discrete action:
-        // We'll assign that action directly to our bid.
+        // Expecting a single discrete action.
         if (actions.DiscreteActions.Length > 0)
         {
             agentBid = actions.DiscreteActions[0];
             Debug.Log("AI42Agent received action bid: " + agentBid);
         }
-        // Give a dummy reward for testing purposes.
-        AddReward(0.1f);
+        // (No dummy reward is added here now; reward shaping is handled in the bidding phase.)
     }
 
-    // Optional: define heuristic actions to test without training.
+    // Optional heuristic for testing without training.
     public override void Heuristic(in ActionBuffers actionsOut)
     {
         var discreteActionsOut = actionsOut.DiscreteActions;
-        // For now, set a default bid value (e.g., 30).
-        discreteActionsOut[0] = 30;
+        discreteActionsOut[0] = 30; // Default bid value for testing.
     }
 
-    // For testing, we'll trigger decision requests with the Space key.
+    // For testing, trigger decision requests using Space.
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Space))
