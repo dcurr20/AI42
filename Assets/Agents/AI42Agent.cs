@@ -5,52 +5,54 @@ using Unity.MLAgents.Sensors;
 
 public class AI42Agent : Agent
 {
-    // Reference to your GameManager, so you can query state.
+    // Reference to GameManager (set via drag-and-drop in the Inspector)
     public GameManager gameManager;
+
+    // This will store the agent's chosen bid value.
+    public int agentBid = 30; // Default initial bid
 
     public override void Initialize()
     {
-        // Initialize the agent (e.g., store references, initialize state variables).
+        // Initialization code if needed.
     }
 
-    // Define the observations your agent makes.
+    // Collect observations from the game state using GameManager.
     public override void CollectObservations(VectorSensor sensor)
     {
-        // For example, observe the current hand, current bid, trump status, etc.
-        // sensor.AddObservation(gameManager.GetSomeGameStateInfo());
-        // In a later version, build a comprehensive observation vector.
         Debug.Log("AI42Agent is collecting observations.");
-        // Example: add current bid (if you create a public method in GameManager that returns the bid)
+
+        // For now, use stub methods from GameManager.
+        // As you expand, add more detailed observations (e.g., trump suit, team score, etc.)
         sensor.AddObservation(gameManager.GetCurrentBid());
-        // Example: add a total hand value (make sure you have a method that calculates that)
         sensor.AddObservation(gameManager.CalculateHandValue());
-        //sensor.AddObservation(gameManager.GetTrumpSuit());
-        //sensor.AddObservation(gameManager.GetTeamScore());
-        // Later, add additional observations as needed:
-        // sensor.AddObservation();
+        // Future observations could include:
+        // sensor.AddObservation(gameManager.GetTrumpSuit());
+        // sensor.AddObservation(gameManager.GetTeamScore(0)); etc.
     }
 
-    // Map the agent’s actions to game decisions.
+    // Map the agent's actions to its decision in the game.
     public override void OnActionReceived(ActionBuffers actions)
     {
-        // Example: use discrete actions to determine bidding or to play a domino.
-        // This is where you’ll define how actions affect the game state.
-        // Log the action values (0 might mean pass, 1 could mean bid a certain increment, etc.)
-        Debug.Log("AI42Agent received actions: " + string.Join(",", actions.DiscreteActions));
-        // Later, use these action values to alter the bidding or play decisions.
-
-        // For now, add a dummy reward to see the reward system in action:
-        AddReward(0.1f); // Positive reward for testing
-
-        // Later, you'll adjust reward signals based on game outcomes (e.g., bid success, winning a trick, etc.)
+        // This example assumes a single discrete action:
+        // We'll assign that action directly to our bid.
+        if (actions.DiscreteActions.Length > 0)
+        {
+            agentBid = actions.DiscreteActions[0];
+            Debug.Log("AI42Agent received action bid: " + agentBid);
+        }
+        // Give a dummy reward for testing purposes.
+        AddReward(0.1f);
     }
 
-    // Optional: provide heuristic controls (useful for testing).
+    // Optional: define heuristic actions to test without training.
     public override void Heuristic(in ActionBuffers actionsOut)
     {
-        // Define manual controls for testing (e.g., using keyboard input).
+        var discreteActionsOut = actionsOut.DiscreteActions;
+        // For now, set a default bid value (e.g., 30).
+        discreteActionsOut[0] = 30;
     }
 
+    // For testing, we'll trigger decision requests with the Space key.
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Space))
@@ -58,5 +60,4 @@ public class AI42Agent : Agent
             RequestDecision();
         }
     }
-
 }
