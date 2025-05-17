@@ -16,6 +16,20 @@ public class GameManager : MonoBehaviour
     private Player winningBidder = null;
     private Player trickLeader = null; // will hold the leader for the current trick
 
+    public int GetCurrentBid()
+    {
+        // This is a placeholder value.
+        // Later, return the actual current bid from your game logic.
+        return 30;
+    }
+
+    public int CalculateHandValue()
+    {
+        // This is a placeholder value.
+        // Later, compute and return the real hand value.
+        return 50;
+    }
+
     // Structure to record a round's result
     private struct RoundResult
     {
