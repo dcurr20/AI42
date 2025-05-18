@@ -1,0 +1,23 @@
+behaviors:
+  AI42Agent:
+    trainer_type: ppo                     # Using Proximal Policy Optimization
+    hyperparameters:
+      batch_size: 1024                    # Number of experiences per training batch
+      buffer_size: 10240                  # Buffer size to accumulate experiences before training
+      learning_rate: 3.0e-4               # Learning rate
+      beta: 5.0e-3                        # Entropy regularization strength
+      epsilon: 0.2                        # PPO clipping value
+      lambd: 0.95                       # GAE discount factor
+      num_epoch: 3                        # Number of epochs per update
+    network_settings:
+      normalize: true                     # Normalize observations
+      hidden_units: 128                   # Number of units in hidden layers
+      num_layers: 2                       # Number of hidden layers
+      vis_encode_type: simple             # If you later add visual observations.
+    reward_signals:
+      extrinsic:
+        gamma: 0.99                       # Discount factor
+        strength: 1.0                     # Reward scaling
+    max_steps: 500000                     # Maximum training steps
+    time_horizon: 64                      # Number of steps before updating the policy (rollout length)
+    summary_freq: 10000                   # How often (in steps) to write summaries for TensorBoard

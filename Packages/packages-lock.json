@@ -87,6 +87,17 @@
       },
       "url": "https://packages.unity.com"
     },
+    "com.unity.barracuda": {
+      "version": "3.0.0",
+      "depth": 1,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.burst": "1.6.0",
+        "com.unity.modules.jsonserialize": "1.0.0",
+        "com.unity.modules.imageconversion": "1.0.0"
+      },
+      "url": "https://packages.unity.com"
+    },
     "com.unity.burst": {
       "version": "1.8.21",
       "depth": 2,
@@ -157,16 +168,15 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.ml-agents": {
-      "version": "https://github.com/Unity-Technologies/ml-agents.git?path=com.unity.ml-agents",
+      "version": "https://github.com/Unity-Technologies/ml-agents.git?path=com.unity.ml-agents#release_17",
       "depth": 0,
       "source": "git",
       "dependencies": {
-        "com.unity.sentis": "2.1.0",
+        "com.unity.barracuda": "1.4.0-preview",
         "com.unity.modules.imageconversion": "1.0.0",
-        "com.unity.modules.jsonserialize": "1.0.0",
-        "com.unity.modules.physics": "1.0.0"
+        "com.unity.modules.jsonserialize": "1.0.0"
       },
-      "hash": "cfb26e3eaf10e4866c0835a68087de392d631e88"
+      "hash": "1c405c8a23f0274bdb4b7e50a49b882575f06454"
     },
     "com.unity.multiplayer.center": {
       "version": "1.0.0",
@@ -231,17 +241,6 @@
       "depth": 2,
       "source": "registry",
       "dependencies": {},
-      "url": "https://packages.unity.com"
-    },
-    "com.unity.sentis": {
-      "version": "2.1.2",
-      "depth": 1,
-      "source": "registry",
-      "dependencies": {
-        "com.unity.burst": "1.8.17",
-        "com.unity.collections": "2.4.3",
-        "com.unity.modules.imageconversion": "1.0.0"
-      },
       "url": "https://packages.unity.com"
     },
     "com.unity.shadergraph": {

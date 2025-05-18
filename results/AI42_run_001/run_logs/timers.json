@@ -1,0 +1,42 @@
+{
+    "name": "root",
+    "metadata": {
+        "timer_format_version": "0.1.0",
+        "start_time_seconds": "1747564449",
+        "python_version": "3.10.11 (tags/v3.10.11:7d4cc5a, Apr  5 2023, 00:38:17) [MSC v.1929 64 bit (AMD64)]",
+        "command_line_arguments": "C:\\Users\\dcurr\\source\\repos\\dcurr20\\AI42\\venv_py310\\Scripts\\mlagents-learn config/ai42_config.yaml --run-id=AI42_run_001",
+        "mlagents_version": "0.28.0",
+        "mlagents_envs_version": "0.28.0",
+        "communication_protocol_version": "1.5.0",
+        "pytorch_version": "2.7.0+cpu",
+        "numpy_version": "1.26.4",
+        "end_time_seconds": "1747564511"
+    },
+    "total": 62.50317899999209,
+    "count": 1,
+    "self": 0.003163499990478158,
+    "children": {
+        "run_training.setup": {
+            "total": 0.12092859999393113,
+            "count": 1,
+            "self": 0.12092859999393113
+        },
+        "TrainerController.start_learning": {
+            "total": 62.37908690000768,
+            "count": 1,
+            "self": 0.00022179997176863253,
+            "children": {
+                "TrainerController._reset_env": {
+                    "total": 62.378854600014165,
+                    "count": 1,
+                    "self": 62.378854600014165
+                },
+                "TrainerController._save_models": {
+                    "total": 1.0500021744519472e-05,
+                    "count": 1,
+                    "self": 1.0500021744519472e-05
+                }
+            }
+        }
+    }
+}
