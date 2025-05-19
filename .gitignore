@@ -16,6 +16,11 @@
 # They also could contain extremely sensitive data
 /[Mm]emoryCaptures/
 
+# Python files and environments can get very large
+# Need to exclude version 3.10 and 3.11
+venv_py310/
+venv_py311/
+
 # Recordings can get excessive in size
 /[Rr]ecordings/
 
