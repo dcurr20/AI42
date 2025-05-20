@@ -20,6 +20,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private float autoResetDelay = 2f; // Delay (in seconds) before auto-resetting after game over
     private bool autoResetTriggered = false;
     private float autoResetTimestamp = 0f;
+    private bool episodeEnded = false;
 
     // Structure to record a round's result
     private struct RoundResult
@@ -363,14 +364,25 @@ IEnumerator GameLoop()
             }
             string winningTeam = (team0GameScore >= GAME_TARGET) ? "Team 0 (North, South)" : "Team 1 (East, West)";
             Debug.Log("Game over. Winner: " + winningTeam);
-            // --- NEW: Signal end of training episode by ending all agents' episodes ---
-            AI42Agent[] agents = FindObjectsOfType<AI42Agent>();
-            foreach (var agent in agents)
+
+            // --- NEW: End the training episode (only once)
+            if (!episodeEnded)
             {
-                agent.EndEpisode();
+                AI42Agent[] agents = Object.FindObjectsByType<AI42Agent>(FindObjectsSortMode.None);
+                foreach (var agent in agents)
+                {
+                    // Call EndEpisode() only once per agent per episode.
+                    agent.EndEpisode();
+                }
+                episodeEnded = true;
             }
-            // NEW: Wait before restarting the game loop (auto-reset)
+
+            // Wait before restarting the game loop (auto-reset)
             yield return new WaitForSeconds(autoResetDelay);
+
+            // Reset the flag for the next training episode.
+            episodeEnded = false;
+
         }
     }
 
