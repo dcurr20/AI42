@@ -363,6 +363,12 @@ IEnumerator GameLoop()
             }
             string winningTeam = (team0GameScore >= GAME_TARGET) ? "Team 0 (North, South)" : "Team 1 (East, West)";
             Debug.Log("Game over. Winner: " + winningTeam);
+            // --- NEW: Signal end of training episode by ending all agents' episodes ---
+            AI42Agent[] agents = FindObjectsOfType<AI42Agent>();
+            foreach (var agent in agents)
+            {
+                agent.EndEpisode();
+            }
             // NEW: Wait before restarting the game loop (auto-reset)
             yield return new WaitForSeconds(autoResetDelay);
         }
