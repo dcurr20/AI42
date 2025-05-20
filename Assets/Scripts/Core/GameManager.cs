@@ -382,6 +382,7 @@ IEnumerator GameLoop()
 
             // Reset the flag for the next training episode.
             episodeEnded = false;
+            Debug.Log("New training episode starting.");
 
         }
     }
