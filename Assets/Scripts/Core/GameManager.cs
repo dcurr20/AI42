@@ -16,6 +16,11 @@ public class GameManager : MonoBehaviour
     private Player winningBidder = null;
     private Player trickLeader = null; // will hold the leader for the current trick
 
+    // --- NEW: Auto-reset fields (insert these along with your other field declarations) ---
+    [SerializeField] private float autoResetDelay = 2f; // Delay (in seconds) before auto-resetting after game over
+    private bool autoResetTriggered = false;
+    private float autoResetTimestamp = 0f;
+
     // Structure to record a round's result
     private struct RoundResult
     {
@@ -324,38 +329,43 @@ public class GameManager : MonoBehaviour
         return result;
     }
 
-    // The overall game loop.
-    IEnumerator GameLoop()
+        // The overall game loop.
+IEnumerator GameLoop()
     {
-        team0GameScore = 0;
-        team1GameScore = 0;
-        int roundCounter = 1;
-        while (team0GameScore < GAME_TARGET && team1GameScore < GAME_TARGET)
+        while (true)  // NEW outer loop for continuous episodes
         {
-            Debug.Log("----- Starting Round " + roundCounter + " -----");
+            team0GameScore = 0;
+            team1GameScore = 0;
+            int roundCounter = 1;
+            while (team0GameScore < GAME_TARGET && team1GameScore < GAME_TARGET)
+            {
+                Debug.Log("----- Starting Round " + roundCounter + " -----");
 
-            InitializeDominoSet();
-            DealDominoes();
-            RunBiddingPhase();
-            RoundResult roundResult = PlayRound();
+                InitializeDominoSet();
+                DealDominoes();
+                RunBiddingPhase();
+                RoundResult roundResult = PlayRound();
 
-            team0GameScore += roundResult.team0Tricks;
-            team1GameScore += roundResult.team1Tricks;
+                team0GameScore += roundResult.team0Tricks;
+                team1GameScore += roundResult.team1Tricks;
 
-            Debug.Log("End of Round " + roundCounter + ". Round score: Team0: " + roundResult.team0Tricks +
-                      ", Team1: " + roundResult.team1Tricks);
-            Debug.Log("Overall score: Team0: " + team0GameScore + ", Team1: " + team1GameScore);
+                Debug.Log("End of Round " + roundCounter + ". Round score: Team0: " + roundResult.team0Tricks +
+                          ", Team1: " + roundResult.team1Tricks);
+                Debug.Log("Overall score: Team0: " + team0GameScore + ", Team1: " + team1GameScore);
 
-            roundCounter++;
+                roundCounter++;
 
-            // Rotate dealer.
-            dealerIndex = (dealerIndex + 1) % players.Count;
-            Debug.Log("New dealer for next round is: " + players[dealerIndex].Name);
+                // Rotate dealer.
+                dealerIndex = (dealerIndex + 1) % players.Count;
+                Debug.Log("New dealer for next round is: " + players[dealerIndex].Name);
 
-            yield return new WaitForSeconds(1.0f);
+                yield return new WaitForSeconds(1.0f);
+            }
+            string winningTeam = (team0GameScore >= GAME_TARGET) ? "Team 0 (North, South)" : "Team 1 (East, West)";
+            Debug.Log("Game over. Winner: " + winningTeam);
+            // NEW: Wait before restarting the game loop (auto-reset)
+            yield return new WaitForSeconds(autoResetDelay);
         }
-        string winningTeam = (team0GameScore >= GAME_TARGET) ? "Team 0 (North, South)" : "Team 1 (East, West)";
-        Debug.Log("Game over. Winner: " + winningTeam);
     }
 
     // Stub method: return dummy current bid.

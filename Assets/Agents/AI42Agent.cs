@@ -56,4 +56,10 @@ public class AI42Agent : Agent
             RequestDecision();
         }
     }
+    // --- NEW: Auto-reset per training episode ---
+    public override void OnEpisodeBegin()
+    {
+        Debug.Log("OnEpisodeBegin: Resetting agent with bid " + agentBid);
+        // Optionally, add any additional reset logic here.
+    }
 }
