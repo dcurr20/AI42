@@ -2,7 +2,7 @@
     "name": "root",
     "metadata": {
         "timer_format_version": "0.1.0",
-        "start_time_seconds": "1747713831",
+        "start_time_seconds": "1747894124",
         "python_version": "3.10.11 (tags/v3.10.11:7d4cc5a, Apr  5 2023, 00:38:17) [MSC v.1929 64 bit (AMD64)]",
         "command_line_arguments": "C:\\Users\\dcurr\\source\\repos\\dcurr20\\AI42\\venv_py310\\Scripts\\mlagents-learn config/ai42_config.yaml --run-id=AI42_run_001 --force",
         "mlagents_version": "0.28.0",
@@ -10,31 +10,31 @@
         "communication_protocol_version": "1.5.0",
         "pytorch_version": "2.7.0+cpu",
         "numpy_version": "1.26.4",
-        "end_time_seconds": "1747713843"
+        "end_time_seconds": "1747894195"
     },
-    "total": 11.827951200000825,
+    "total": 71.6648466999759,
     "count": 1,
-    "self": 0.005007599989767186,
+    "self": 0.008233299944549799,
     "children": {
         "run_training.setup": {
-            "total": 0.10485889999836218,
+            "total": 0.14592620002804324,
             "count": 1,
-            "self": 0.10485889999836218
+            "self": 0.14592620002804324
         },
         "TrainerController.start_learning": {
-            "total": 11.718084700012696,
+            "total": 71.5106872000033,
             "count": 1,
-            "self": 0.00013490000856108963,
+            "self": 0.00020569999469444156,
             "children": {
                 "TrainerController._reset_env": {
-                    "total": 11.717937900000834,
+                    "total": 71.51046800002223,
                     "count": 1,
-                    "self": 11.717937900000834
+                    "self": 71.51046800002223
                 },
                 "TrainerController._save_models": {
-                    "total": 1.1900003300979733e-05,
+                    "total": 1.3499986380338669e-05,
                     "count": 1,
-                    "self": 1.1900003300979733e-05
+                    "self": 1.3499986380338669e-05
                 }
             }
         }

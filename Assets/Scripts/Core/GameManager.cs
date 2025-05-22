@@ -14,7 +14,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using Unity.MLAgents;  // Required for ML-Agents training.
-using System;          // For Array.IndexOf
+using System;          // For Array.IndexOf and Array.Find
 
 namespace AI42.Core
 {
@@ -244,6 +244,11 @@ namespace AI42.Core
         void DetermineInitialDealer()
         {
             Debug.Log("Determining initial dealer via one-domino draw...");
+            if (players == null || players.Length == 0)
+            {
+                Debug.LogError("No players found! Cannot determine dealer.");
+                return;
+            }
             // Build a temporary full domino set.
             List<Domino> tempSet = new List<Domino>();
             for (int i = 0; i <= 6; i++)
@@ -261,8 +266,14 @@ namespace AI42.Core
             }
             int highestPips = -1;
             int chosenDealerIndex = -1;
+            // Use the first few dominoes from the shuffled set.
             for (int i = 0; i < players.Length; i++)
             {
+                if (i >= tempSet.Count)
+                {
+                    Debug.LogWarning("Not enough dominoes for player " + i + ". Using default value.");
+                    break;
+                }
                 Domino drawn = tempSet[i];
                 int pipTotal = drawn.SideA + drawn.SideB;
                 Debug.Log("Player " + players[i].Name + " draws " + drawn.ToString() +
@@ -272,6 +283,11 @@ namespace AI42.Core
                     highestPips = pipTotal;
                     chosenDealerIndex = i;
                 }
+            }
+            if (chosenDealerIndex == -1)
+            {
+                chosenDealerIndex = 0;
+                Debug.LogWarning("No valid dealer found. Defaulting to index 0.");
             }
             dealerIndex = chosenDealerIndex;
             Debug.Log("Initial Dealer is " + players[dealerIndex].Name);
@@ -566,7 +582,7 @@ namespace AI42.Core
 
         // --------------------------------------------------------------------
         // Stub Methods to satisfy external references.
-        // You can replace these with your actual game logic later.
+        // Replace these with your actual game logic as needed.
 
         // Returns dummy current bid.
         public int GetCurrentBid()
@@ -595,7 +611,7 @@ namespace AI42.Core
         // Evaluates hand quality for the ML Agent.
         public int EvaluateHandQuality()
         {
-            // Example: sum of pip totals for North's hand.
+            // Example: Sum of pip totals for North's hand.
             Player north = Array.Find(players, p => p.Name == "North");
             if (north != null)
             {
@@ -652,7 +668,7 @@ namespace AI42.Core
         public int Bid(int currentHighBid)
         {
             // Replace with actual bidding logic.
-            return currentHighBid; // Default to passing.
+            return currentHighBid; // Default: pass.
         }
 
         // Dummy function for playing a domino.
