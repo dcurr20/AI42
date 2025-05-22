@@ -233,6 +233,19 @@ namespace AI42.Core
             }
             players = allPlayers.ToArray();
 
+            // If exactly 4 players, assign default names if they're not already set.
+            if (players.Length == 4)
+            {
+                string[] defaultNames = new string[] { "South", "West", "North", "East" };
+                for (int i = 0; i < players.Length; i++)
+                {
+                    if (string.IsNullOrEmpty(players[i].Name))
+                    {
+                        players[i].Name = defaultNames[i];
+                    }
+                }
+            }
+
             // Position the players.
             ResetPlayers();
 
