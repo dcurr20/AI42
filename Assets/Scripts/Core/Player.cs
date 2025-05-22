@@ -1,59 +1,50 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public enum PlayerType { Human, AI }
-
-public class Player
+namespace AI42.Core
 {
-    public string Name { get; private set; }
-    public List<Domino> Hand { get; set; }
-    public PlayerType Type { get; private set; }
+    public enum PlayerType { Human, AI }
 
-    public Player(string name, PlayerType type)
+    public class Player : MonoBehaviour
     {
-        Name = name;
-        Type = type;
-        Hand = new List<Domino>();
-    }
+        public string Name;
+        public PlayerType Type;
+        public List<Domino> Hand;
 
-    // AI bidding logic.
-    // Compute base bid = clamped(handPips/2, 30, 41).  
-    // If base bid isn't higher than currentHighBid but the hand is strong (handPips ≥ 40), 
-    // there's a 50% chance to raise by 1; otherwise, pass.
-    public int Bid(int currentHighBid)
-    {
-        if (Type == PlayerType.Human)
+        void Awake()
         {
-            // Simulate human passing for now.
-            return currentHighBid;
+            Hand = new List<Domino>();
         }
 
-        int handPips = 0;
-        foreach (Domino d in Hand)
-            handPips += d.SideA + d.SideB;
-
-        int baseBid = Mathf.Clamp(handPips / 2, 30, 41);
-        if (baseBid <= currentHighBid)
+        public int Bid(int currentHighBid)
         {
-            if (handPips >= 40 && Random.value > 0.5f)
+            // Bidding logic…
+            if (Type == PlayerType.Human)
             {
-                // Raise by 1 over currentHighBid.
-                return currentHighBid + 1;
+                return currentHighBid;
             }
-            return currentHighBid; // Pass.
+            int handPips = 0;
+            foreach (Domino d in Hand)
+                handPips += d.SideA + d.SideB;
+            int baseBid = Mathf.Clamp(handPips / 2, 30, 41);
+            if (baseBid <= currentHighBid)
+            {
+                if (handPips >= 40 && Random.value > 0.5f)
+                    return currentHighBid + 1;
+                return currentHighBid;
+            }
+            return baseBid;
         }
-        return baseBid;
-    }
 
-    // Play a domino by simply removing and returning the first domino in hand.
-    public Domino PlayDomino()
-    {
-        if (Hand.Count > 0)
+        public Domino PlayDomino()
         {
-            Domino played = Hand[0];
-            Hand.RemoveAt(0);
-            return played;
+            if (Hand.Count > 0)
+            {
+                Domino played = Hand[0];
+                Hand.RemoveAt(0);
+                return played;
+            }
+            return null;
         }
-        return null;
     }
 }
