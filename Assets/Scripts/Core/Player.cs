@@ -7,8 +7,8 @@ namespace AI42.Core
 
     public class Player : MonoBehaviour
     {
-        public string Name;
-        public PlayerType Type;
+        public string Name;       // For example, "South", "North", etc.
+        public PlayerType Type;   // AI or Human.
         public List<Domino> Hand;
 
         void Awake()
@@ -18,11 +18,8 @@ namespace AI42.Core
 
         public int Bid(int currentHighBid)
         {
-            // Bidding logic…
             if (Type == PlayerType.Human)
-            {
                 return currentHighBid;
-            }
             int handPips = 0;
             foreach (Domino d in Hand)
                 handPips += d.SideA + d.SideB;

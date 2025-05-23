@@ -662,38 +662,4 @@ namespace AI42.Core
             return SideA + "-" + SideB;
         }
     }
-
-    // --------------------------------------------------------------------
-    // Minimal stub for Player.
-    // Assumes the Player component holds the player's name, a hand of dominoes,
-    // and methods for bidding and playing a domino.
-    public class Player : MonoBehaviour
-    {
-        public string Name; // The player's name.
-        public List<Domino> Hand;
-
-        void Awake()
-        {
-            Hand = new List<Domino>();
-        }
-
-        // Dummy bidding function.
-        public int Bid(int currentHighBid)
-        {
-            // Replace with actual bidding logic.
-            return currentHighBid; // Default: pass.
-        }
-
-        // Dummy function for playing a domino.
-        public Domino PlayDomino()
-        {
-            if (Hand != null && Hand.Count > 0)
-            {
-                Domino play = Hand[0];
-                Hand.RemoveAt(0);
-                return play;
-            }
-            return null;
-        }
-    }
 }

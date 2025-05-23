@@ -468,7 +468,6 @@ GameObject:
   - component: {fileID: 922024489}
   - component: {fileID: 922024491}
   - component: {fileID: 922024490}
-  - component: {fileID: 922024492}
   m_Layer: 0
   m_Name: PlayerEast
   m_TagString: Untagged
@@ -539,20 +538,6 @@ MonoBehaviour:
   m_UseChildSensors: 1
   m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
---- !u!114 &922024492
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 922024487}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0d33665e111ffed40b7ecbb2a9a11141, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Name: East
-  Type: 1
 --- !u!1 &1013120209
 GameObject:
   m_ObjectHideFlags: 0
@@ -724,7 +709,6 @@ GameObject:
   - component: {fileID: 1141245028}
   - component: {fileID: 1141245030}
   - component: {fileID: 1141245029}
-  - component: {fileID: 1141245031}
   m_Layer: 0
   m_Name: PlayerSouth
   m_TagString: Untagged
@@ -795,20 +779,6 @@ MonoBehaviour:
   m_UseChildSensors: 1
   m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
---- !u!114 &1141245031
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1141245026}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0d33665e111ffed40b7ecbb2a9a11141, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Name: South
-  Type: 1
 --- !u!1 &1211936632
 GameObject:
   m_ObjectHideFlags: 0
@@ -820,7 +790,6 @@ GameObject:
   - component: {fileID: 1211936634}
   - component: {fileID: 1211936636}
   - component: {fileID: 1211936635}
-  - component: {fileID: 1211936637}
   m_Layer: 0
   m_Name: PlayerWest
   m_TagString: Untagged
@@ -891,20 +860,6 @@ MonoBehaviour:
   m_UseChildSensors: 1
   m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
---- !u!114 &1211936637
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1211936632}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0d33665e111ffed40b7ecbb2a9a11141, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Name: West
-  Type: 1
 --- !u!1 &1252176947
 GameObject:
   m_ObjectHideFlags: 0
@@ -916,7 +871,6 @@ GameObject:
   - component: {fileID: 1252176949}
   - component: {fileID: 1252176951}
   - component: {fileID: 1252176950}
-  - component: {fileID: 1252176952}
   m_Layer: 0
   m_Name: PlayerNorth
   m_TagString: Untagged
@@ -987,20 +941,6 @@ MonoBehaviour:
   m_UseChildSensors: 1
   m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
---- !u!114 &1252176952
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1252176947}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0d33665e111ffed40b7ecbb2a9a11141, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Name: North
-  Type: 1
 --- !u!1 &1517499626
 GameObject:
   m_ObjectHideFlags: 0
