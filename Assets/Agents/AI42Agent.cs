@@ -23,7 +23,14 @@ namespace AI42.Core
         public override void CollectObservations(VectorSensor sensor)
         {
             Debug.Log("AI42Agent is collecting observations.");
-            // Expand observation vector to 5 values:
+
+            // Check if gameManager is null before calling its methods
+            if (gameManager == null)
+            {
+                Debug.LogError("GameManager reference is null in AI42Agent.");
+                return; // Prevents further execution to avoid crashes
+            }
+
             sensor.AddObservation(gameManager.GetCurrentBid());       // 1. Current bid.
             sensor.AddObservation(gameManager.CalculateHandValue());    // 2. Hand value.
             sensor.AddObservation(gameManager.GetTrumpSuit());          // 3. Dummy trump suit.
