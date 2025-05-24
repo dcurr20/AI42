@@ -378,7 +378,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 1
+    VectorObservationSize: 5
     NumStackedVectorObservations: 1
     m_ActionSpec:
       m_NumContinuousActions: 0
@@ -537,7 +537,7 @@ MonoBehaviour:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
   MaxStep: 0
-  gameManager: {fileID: 0}
+  gameManager: {fileID: 362936340}
   agentBid: 30
 --- !u!114 &922024494
 MonoBehaviour:
@@ -793,7 +793,7 @@ MonoBehaviour:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
   MaxStep: 0
-  gameManager: {fileID: 0}
+  gameManager: {fileID: 362936340}
   agentBid: 30
 --- !u!114 &1141245033
 MonoBehaviour:
@@ -889,7 +889,7 @@ MonoBehaviour:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
   MaxStep: 0
-  gameManager: {fileID: 0}
+  gameManager: {fileID: 362936340}
   agentBid: 30
 --- !u!114 &1211936639
 MonoBehaviour:
@@ -985,7 +985,7 @@ MonoBehaviour:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
   MaxStep: 0
-  gameManager: {fileID: 0}
+  gameManager: {fileID: 362936340}
   agentBid: 30
 --- !u!114 &1252176954
 MonoBehaviour:
