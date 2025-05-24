@@ -146,8 +146,8 @@ namespace AI42.Core
                     statusText.gameObject.SetActive(false);
                 }
 
-                // (Optional: If you want to determine a new dealer each game, uncomment below.)
-                // DetermineInitialDealer();
+                // Reinitialize additional overall game state (positions and dealer) for the new training episode.
+                ResetOverallGameState();
 
                 // Reset flag for the next training episode.
                 episodeEnded = false;
@@ -644,10 +644,22 @@ namespace AI42.Core
             public int team1Tricks;
             public RoundResult() { team0Tricks = 0; team1Tricks = 0; }
         }
-    }
 
-    // --------------------------------------------------------------------
-    // Minimal stub for Domino (represents a domino with two sides).
+        // --------------------------------------------------------------------
+        // ResetOverallGameState()
+        // Reinitializes additional game state (player positions and dealer) for a new training episode.
+        private void ResetOverallGameState()
+        {
+            // Reposition the players.
+            ResetPlayers();
+            // Re-determine the initial dealer.
+            DetermineInitialDealer();
+            Debug.Log("Overall game state has been reset for a new episode.");
+        }
+    } // End of GameManager class
+
+      // --------------------------------------------------------------------
+      // Minimal stub for Domino (represents a domino with two sides).
     public class Domino
     {
         public int SideA;
@@ -662,4 +674,4 @@ namespace AI42.Core
             return SideA + "-" + SideB;
         }
     }
-}
+} // End of namespace AI42.Core
