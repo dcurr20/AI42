@@ -10,6 +10,15 @@ namespace AI42.Core
         // Reference to GameManager—assign via Inspector.
         public GameManager gameManager;
 
+        void Awake()
+        {
+            // Ensure gameManager is assigned at runtime in case Unity removes the reference
+            if (gameManager == null)
+            {
+                gameManager = FindObjectOfType<GameManager>();
+            }
+        }
+
         // Stores the ML Agent's chosen bid value.
         public int agentBid = 30; // Default initial bid.
 
