@@ -38,7 +38,7 @@ namespace AI42.Core
         private int dealerIndex;       // Index of the current dealer in the players array
 
         // Fields for training auto-reset timing.
-        [SerializeField] private float autoResetDelay = 2f;  // Delay between overall games
+        [SerializeField] private float autoResetDelay = 10f;  // Delay between overall games
         private bool episodeEnded = false;                  // Flag: ensures EndEpisode() is only called once per game
 
         // Original multi-agent groups and lists.
@@ -63,6 +63,9 @@ namespace AI42.Core
         // and starts the overall game loop.
         void Start()
         {
+            // Speed up the simulation for AI Training
+            Time.timeScale = 10f;   // Run the game at 10x speed for faster training.
+
             // Register red team players with the red team group.
             foreach (var go in redTeamStartingPlayers)
             {
@@ -111,6 +114,7 @@ namespace AI42.Core
                 // Reset overall game scores.
                 team0GameScore = 0;
                 team1GameScore = 0;
+                yield return null;  //a quick return to make sure the AI has something to prevent timeout
                 Debug.Log("Starting a new overall game.");
 
                 // Start the internal game loop (round-by-round play until one team wins).

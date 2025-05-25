@@ -328,7 +328,7 @@ MonoBehaviour:
   - {fileID: 624636473}
   - {fileID: 236245856}
   statusText: {fileID: 1774336159}
-  GAME_TARGET: 7
+  GAME_TARGET: 10
   autoResetDelay: 2
 --- !u!4 &362936341
 Transform:
@@ -466,8 +466,8 @@ MonoBehaviour:
   m_Model: {fileID: 0}
   m_InferenceDevice: 0
   m_BehaviorType: 0
-  m_BehaviorName: My Behavior
-  TeamId: 1
+  m_BehaviorName: AI42Agent
+  TeamId: 0
   m_UseChildSensors: 1
   m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
@@ -703,7 +703,7 @@ MonoBehaviour:
   m_Model: {fileID: 0}
   m_InferenceDevice: 0
   m_BehaviorType: 0
-  m_BehaviorName: My Behavior
+  m_BehaviorName: AI42Agent
   TeamId: 0
   m_UseChildSensors: 1
   m_UseChildActuators: 1
@@ -799,8 +799,8 @@ MonoBehaviour:
   m_Model: {fileID: 0}
   m_InferenceDevice: 0
   m_BehaviorType: 0
-  m_BehaviorName: My Behavior
-  TeamId: 1
+  m_BehaviorName: AI42Agent
+  TeamId: 0
   m_UseChildSensors: 1
   m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
@@ -895,7 +895,7 @@ MonoBehaviour:
   m_Model: {fileID: 0}
   m_InferenceDevice: 0
   m_BehaviorType: 0
-  m_BehaviorName: My Behavior
+  m_BehaviorName: AI42Agent
   TeamId: 0
   m_UseChildSensors: 1
   m_UseChildActuators: 1
