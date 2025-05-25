@@ -29,7 +29,7 @@ namespace AI42.Core
         // A TextMeshPro element to display overall game status (winner, etc.)
         public TMP_Text statusText;
         // Overall game target (e.g. first team to reach 7 points wins)
-        public int GAME_TARGET = 10;
+        public int GAME_TARGET = 100;
 
         // --------------------------------------------------------------------
         // --- Private fields for game state.
@@ -38,7 +38,7 @@ namespace AI42.Core
         private int dealerIndex;       // Index of the current dealer in the players array
 
         // Fields for training auto-reset timing.
-        [SerializeField] private float autoResetDelay = 20f;  // Delay between overall games
+        [SerializeField] private float autoResetDelay = 200f;  // Delay between overall games
         private bool episodeEnded = false;                  // Flag: ensures EndEpisode() is only called once per game
 
         // Original multi-agent groups and lists.
@@ -64,7 +64,7 @@ namespace AI42.Core
         void Start()
         {
             // Speed up the simulation for AI Training
-            Time.timeScale = 20f;   // Run the game at 10x speed for faster training.
+            Time.timeScale = 1f;   // Run the game at 10x speed for faster training.
 
             // Register red team players with the red team group.
             foreach (var go in redTeamStartingPlayers)

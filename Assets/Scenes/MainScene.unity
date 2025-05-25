@@ -329,7 +329,7 @@ MonoBehaviour:
   - {fileID: 236245856}
   statusText: {fileID: 1774336159}
   GAME_TARGET: 10
-  autoResetDelay: 2
+  autoResetDelay: 200
 --- !u!4 &362936341
 Transform:
   m_ObjectHideFlags: 0
