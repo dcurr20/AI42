@@ -592,7 +592,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1039913517}
   - component: {fileID: 1039913516}
-  - component: {fileID: 1039913515}
   m_Layer: 0
   m_Name: AgentController
   m_TagString: Untagged
@@ -600,24 +599,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1039913515
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1039913514}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 75192474056fb7548a4849346292deff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  agentParameters:
-    maxStep: 0
-  hasUpgradedFromAgentParameters: 1
-  MaxStep: 0
-  gameManager: {fileID: 362936340}
-  agentBid: 30
 --- !u!114 &1039913516
 MonoBehaviour:
   m_ObjectHideFlags: 0
