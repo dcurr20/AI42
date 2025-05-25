@@ -29,7 +29,7 @@ namespace AI42.Core
         // A TextMeshPro element to display overall game status (winner, etc.)
         public TMP_Text statusText;
         // Overall game target (e.g. first team to reach 7 points wins)
-        public int GAME_TARGET = 7;
+        public int GAME_TARGET = 10;
 
         // --------------------------------------------------------------------
         // --- Private fields for game state.
@@ -38,7 +38,7 @@ namespace AI42.Core
         private int dealerIndex;       // Index of the current dealer in the players array
 
         // Fields for training auto-reset timing.
-        [SerializeField] private float autoResetDelay = 10f;  // Delay between overall games
+        [SerializeField] private float autoResetDelay = 20f;  // Delay between overall games
         private bool episodeEnded = false;                  // Flag: ensures EndEpisode() is only called once per game
 
         // Original multi-agent groups and lists.
@@ -64,7 +64,7 @@ namespace AI42.Core
         void Start()
         {
             // Speed up the simulation for AI Training
-            Time.timeScale = 10f;   // Run the game at 10x speed for faster training.
+            Time.timeScale = 20f;   // Run the game at 10x speed for faster training.
 
             // Register red team players with the red team group.
             foreach (var go in redTeamStartingPlayers)
@@ -114,7 +114,7 @@ namespace AI42.Core
                 // Reset overall game scores.
                 team0GameScore = 0;
                 team1GameScore = 0;
-                yield return null;  //a quick return to make sure the AI has something to prevent timeout
+                yield return null;  //a quick null return to make sure the AI has something to prevent timeout
                 Debug.Log("Starting a new overall game.");
 
                 // Start the internal game loop (round-by-round play until one team wins).
@@ -151,7 +151,8 @@ namespace AI42.Core
                 }
 
                 // Reinitialize additional overall game state (positions and dealer) for the new training episode.
-                ResetOverallGameState();
+                yield return StartCoroutine(ResetOverallGameState());
+                yield return new WaitForSeconds(autoResetDelay);
 
                 // Reset flag for the next training episode.
                 episodeEnded = false;
@@ -258,21 +259,28 @@ namespace AI42.Core
 
         // --------------------------------------------------------------------
         // DetermineInitialDealer(): Chooses the initial dealer via a one-domino draw.
-        void DetermineInitialDealer()
+        // Convert DetermineInitialDealer() from a void method to an IEnumerator coroutine.
+        private IEnumerator DetermineInitialDealer()
         {
             Debug.Log("Determining initial dealer via one-domino draw...");
             if (players == null || players.Length == 0)
             {
                 Debug.LogError("No players found! Cannot determine dealer.");
-                return;
+                yield break;
             }
+
             // Build a temporary full domino set.
             List<Domino> tempSet = new List<Domino>();
             for (int i = 0; i <= 6; i++)
             {
                 for (int j = i; j <= 6; j++)
+                {
                     tempSet.Add(new Domino(i, j));
+                }
             }
+            // Yield after building the domino set.
+            yield return null;
+
             // Shuffle using Fisher-Yates.
             for (int i = 0; i < tempSet.Count; i++)
             {
@@ -280,7 +288,15 @@ namespace AI42.Core
                 Domino temp = tempSet[i];
                 tempSet[i] = tempSet[randIndex];
                 tempSet[randIndex] = temp;
+
+                // Optionally yield every few iterations to break up the work.
+                if ((i + 1) % 5 == 0)
+                {
+                    yield return null;
+                }
             }
+            yield return null;
+
             int highestPips = -1;
             int chosenDealerIndex = -1;
             // Use the first few dominoes from the shuffled set.
@@ -300,6 +316,8 @@ namespace AI42.Core
                     highestPips = pipTotal;
                     chosenDealerIndex = i;
                 }
+                // Yield after processing each player's draw (especially if there were many players).
+                yield return null;
             }
             if (chosenDealerIndex == -1)
             {
@@ -308,6 +326,9 @@ namespace AI42.Core
             }
             dealerIndex = chosenDealerIndex;
             Debug.Log("Initial Dealer is " + players[dealerIndex].Name);
+
+            // Final yield to ensure completion.
+            yield return null;
         }
 
         // --------------------------------------------------------------------
@@ -595,7 +616,7 @@ namespace AI42.Core
                     blueTeamStartingPlayers[i].transform.rotation = Quaternion.identity;
                 }
             }
-        }
+       }
 
         // --------------------------------------------------------------------
         // Stub Methods to satisfy external references.
@@ -652,18 +673,23 @@ namespace AI42.Core
         // --------------------------------------------------------------------
         // ResetOverallGameState()
         // Reinitializes additional game state (player positions and dealer) for a new training episode.
-        private void ResetOverallGameState()
+        private IEnumerator ResetOverallGameState()
         {
-            // Reposition the players.
+            // Reset players.
             ResetPlayers();
-            // Re-determine the initial dealer.
-            DetermineInitialDealer();
+            yield return null;  // Let Unity update.
+
+            // Now call the modified DetermineInitialDealer() as a coroutine.
+            yield return StartCoroutine(DetermineInitialDealer());
+
+            yield return null;  // Optionally yield again.
+
             Debug.Log("Overall game state has been reset for a new episode.");
         }
     } // End of GameManager class
 
-      // --------------------------------------------------------------------
-      // Minimal stub for Domino (represents a domino with two sides).
+    // --------------------------------------------------------------------
+    // Minimal stub for Domino (represents a domino with two sides).
     public class Domino
     {
         public int SideA;
